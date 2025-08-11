@@ -154,7 +154,7 @@ The simulation employs a custom force field:
 
 ## 🤝 Contributing
 
-This is a portfolio demonstration project. For questions about the technical approach or implementation details, please open an issue or contact the author.
+This is a portfolio demonstration project. For questions about the technical approach, please open an issue.
 ---
 
 ## Limitations
