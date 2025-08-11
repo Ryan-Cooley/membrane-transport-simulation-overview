@@ -8,63 +8,55 @@
 
 ## Overview
 
-This repository documents a comprehensive molecular dynamics simulation study of particle transport across membrane-like barriers using **OpenMM** for dynamics and **VMD** for visualization. The project demonstrates advanced molecular simulation techniques including custom force field development, periodic boundary conditions, and selective transport mechanisms.
+This repository documents a **custom-force transport prototype** in OpenMM (Python interface) with VMD for inspection.  
+The goal was to test whether particles could traverse a membrane-like barrier under a **downward driving force** while:
+- keeping the membrane compact via **harmonic restraints**,
+- **confining particles** within the simulation box,
+- **blocking non-pore penetration** with a short-range repulsive wall near the membrane surface.
 
-> **Note**: This is a portfolio demonstration. All proprietary data, parameter values, structures, and quantitative results have been redacted to maintain confidentiality while preserving the technical approach and engineering insights.
+> **Note:** This prototype **does not implement explicit nonbonded interactions** (e.g., Lennard-Jones/Coulomb) or a full biomolecular force field. Temperature control was used to sustain motion and stabilize dynamics, but selectivity was governed by the custom forces and geometry—not by a calibrated force field.
 
 ## 🎯 Project Objectives
 
-- **Design and implement** a membrane transport simulation framework
-- **Validate** force field parameters and system topology
+- **Design and implement** a membrane transport prototype
+- **Establish** robust setup/troubleshooting protocols
 - **Characterize** particle transport selectivity across membrane pores
-- **Establish** robust simulation protocols for future studies
 - **Document** engineering decisions and troubleshooting approaches
 
-## 🔬 Technical Approach
+## 🔬 Technical Approach (Accurate Summary)
 
-### System Architecture
-- **Membrane Model**: Compact lipid bilayer with embedded transport channels
-- **Particle System**: Diverse particle populations with varying physical properties
-- **Boundary Conditions**: Periodic box with controlled particle confinement
-- **Force Field**: Custom implementation combining standard and specialized interactions
+**System Sketch**
+- Membrane: simplified slab built from scratch (no lipid FF); compactness maintained using **harmonic restraints**.
+- Particles: simple point masses (no bonded terms); a **spectrum of radii** and masses was explored (values redacted).
+- Box/Boundaries: periodic or confining boundaries to keep particles in a defined region.
 
-### Key Engineering Components
+**Forces Used**
+- **Downward drive** (pressure surrogate): a custom force pushing particles toward/through pores.
+- **Membrane restraint**: harmonic restraint field to keep the slab compact and positioned.
+- **Repulsive barrier near membrane**: custom short-range potential preventing transit **except through pores**.
+- **No explicit LJ/Coulomb**: nonbonded interactions were not included in this prototype.
 
-#### 1. **Membrane Stabilization**
-```python
-# Harmonic restraints maintain membrane integrity
-# Custom force field prevents structural degradation
-# Temperature-controlled dynamics ensure stability
-```
+**Dynamics & Control**
+- Integrator + **thermostat** (values redacted) to maintain a target temperature.
+- Protocol: minimize → equilibrate → drive; frame cadence redacted.
 
-#### 2. **Transport Mechanisms**
-- **Driving Forces**: Applied external forces to simulate concentration gradients
-- **Selective Transport**: Pore-mediated particle passage with size-dependent selectivity
-- **Barrier Functions**: Repulsive interactions prevent non-specific membrane penetration
-
-#### 3. **Validation Protocols**
-- **Energy Conservation**: Monitoring potential and kinetic energy evolution
-- **Temperature Control**: Langevin dynamics with proper thermostat implementation
-- **Structural Integrity**: Continuous assessment of membrane and particle stability
+**Diagnostics**
+- Monitored **temperature**, **potential energy**, and qualitative trajectories in VMD.
+- Checked mass–acceleration proportionality and boundary behavior.
 
 ## 🛠️ Implementation Details
 
 ### Force Field Design
-The simulation employs a multi-component force field:
+The simulation employs a custom force field:
 
-1. **Standard Interactions**
-   - Bonded terms (bonds, angles, dihedrals)
-   - Non-bonded interactions (Lennard-Jones, Coulombic)
-
-2. **Custom Forces**
+1. **Custom Forces**
    - Membrane restraint potentials
    - Transport driving forces
    - Surface repulsion barriers
 
-3. **Boundary Conditions**
+2. **Boundary Conditions**
    - Periodic boundary implementation
    - Particle confinement strategies
-   - Long-range interaction handling
 
 ### Simulation Protocol
 ```
@@ -89,48 +81,35 @@ The simulation employs a multi-component force field:
    └── Analysis preparation
 ```
 
-## 📊 Results & Insights
+## 📊 Qualitative Findings
 
-### Qualitative Observations
-- **Transport Behavior**: Particles demonstrated passage through membrane pores, but **lacked expected size selectivity**
-- **Uniform Distribution**: Transport rates showed similar patterns across different particle sizes, indicating insufficient selective filtering
-- **Force Dependence**: Transport rates varied systematically with applied driving forces
-- **Stability**: Membrane maintained structural integrity throughout simulations
+- Particles traversed the membrane **when pores were present** and drive was applied.
+- Without pores, the **repulsive wall** blocked penetration as intended.
+- Size selectivity was **limited** in this prototype because no explicit nonbonded potentials were used; behavior was dominated by geometry and custom forces.
+- Membrane remained compact under harmonic restraint.
 
-### Technical Achievements
-- **Robust Setup**: Established reproducible simulation protocols
-- **Force Field Validation**: Confirmed physical consistency of custom interactions
-- **Performance Optimization**: Achieved stable dynamics with reasonable computational cost
-- **Analysis Framework**: Developed comprehensive monitoring and analysis tools
-- **Critical Insight**: Identified key limitations in selective transport mechanisms
+> Outcome: Did not reach the quantitative selectivity targets; prepared **next-step plan** for a successor to complete a physics-faithful model.
 
-## 🔄 Next Steps & Recommendations
+## 🔄 Next Steps (to make it physically meaningful)
 
-### Immediate Enhancements
-1. **Selective Transport Refinement**
-   - Implement stronger size-dependent repulsive barriers
-   - Redesign pore geometry with tighter size constraints
-   - Add explicit particle-membrane interaction potentials
+1) **Introduce physical nonbonded interactions**
+   - Add **WCA/Lennard-Jones** for sterics and optional **Coulomb** if charges matter.
+   - Calibrate ε/σ (or WCA) to create radius-dependent exclusion realistically.
 
-2. **Automated Analysis**
-   - Implement crossing detection algorithms
-   - Develop quantitative transport metrics
-   - Create real-time monitoring dashboards
+2) **Define the membrane potential surface**
+   - Use an explicit atomistic slab or a **continuous potential field** for the wall/pore.
+   - Parameterize pore radius and wall stiffness; sweep these systematically.
 
-3. **Parameter Optimization**
-   - Systematic force field refinement
-   - Sensitivity analysis for key parameters
-   - Validation against experimental data
+3) **Model the driving mechanism more faithfully**
+   - Replace the global downward force with: concentration gradient, body-force density, or a **pressure differential** (barostat-compatible setup if applicable).
 
-4. **Extended Studies**
-   - Broader particle size ranges
-   - Multiple membrane compositions
-   - Temperature and pressure effects
+4) **Automate analysis**
+   - Add a crossing detector (plane or cylindrical surface test) and log per-particle events.
+   - Produce rate vs. radius curves; compute uncertainties via block averaging.
 
-### Long-term Development
-- **High-throughput Screening**: Automated parameter space exploration
-- **Machine Learning Integration**: Predictive modeling of transport properties
-- **Experimental Validation**: Collaboration with experimental groups
+5) **Validation & stability**
+   - Temperature/PE drift checks; timestep stability scans.
+   - Compare toy results to known limits (e.g., hard-sphere sieving).
 
 ## 🚀 Technical Challenges & Solutions
 
@@ -152,11 +131,9 @@ The simulation employs a multi-component force field:
 
 ## 🛠️ Technology Stack
 
-- **OpenMM 7.7+**: Molecular dynamics engine with Python API
-- **VMD 1.9+**: Visualization and analysis platform
-- **Python 3.8+**: Primary development environment
-- **NumPy/SciPy**: Numerical computing and analysis
-- **Matplotlib/Seaborn**: Data visualization and plotting
+- **OpenMM (Python interface)** — custom forces, integration, thermostating
+- **VMD** — trajectory inspection
+- Python scientific stack (NumPy, Matplotlib) for local plotting (plots not included)
 
 ## 📚 References & Resources
 
@@ -178,6 +155,14 @@ The simulation employs a multi-component force field:
 ## 🤝 Contributing
 
 This is a portfolio demonstration project. For questions about the technical approach or implementation details, please open an issue or contact the author.
+---
+
+## Limitations
+
+- No explicit LJ/Coulomb or bonded force field terms; selectivity limited by geometry + custom forces.
+- No quantitative transport rates reported here; no trajectories or plots published.
+- Prototype intended as a **troubleshooting and methods-finding step** toward a physics-faithful model.
+
 ---
 
 **Note**: This repository serves as a technical portfolio piece demonstrating advanced molecular simulation capabilities. All proprietary information, parameter values, and quantitative results have been intentionally omitted to maintain confidentiality while preserving the technical insights and engineering approach.
