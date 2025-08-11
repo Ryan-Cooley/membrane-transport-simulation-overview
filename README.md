@@ -144,18 +144,11 @@ The simulation employs a custom force field:
 
 ### VMD Resources
 - [VMD User Guide](https://www.ks.uiuc.edu/Research/vmd/current/ug/)
-- [Tcl/Tk Scripting](https://www.ks.uiuc.edu/Research/vmd/current/ug/node126.html)
 - [Analysis Tools](https://www.ks.uiuc.edu/Research/vmd/current/ug/node127.html)
-
-### Molecular Dynamics Theory
-- Allen & Tildesley: "Computer Simulation of Liquids"
-- Frenkel & Smit: "Understanding Molecular Simulation"
-- Leach: "Molecular Modelling: Principles and Applications"
 
 ## 🤝 Contributing
 
-This is a portfolio demonstration project. For questions about the technical approach, please open an issue.
----
+Portfolio demonstration. Questions? Open an issue.
 
 ## Limitations
 
