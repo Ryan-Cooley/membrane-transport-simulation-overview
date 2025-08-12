@@ -6,6 +6,8 @@
 ![VMD](https://img.shields.io/badge/VMD-1.9+-purple)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 
+![VMD Simulation Screenshot](vmdss.png)
+
 ## Overview
 
 This repository documents a **custom-force transport prototype** in OpenMM (Python interface) with VMD for inspection.  
