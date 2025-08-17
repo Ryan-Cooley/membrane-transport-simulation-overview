@@ -6,7 +6,7 @@
 ![VMD](https://img.shields.io/badge/VMD-1.9+-purple)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 
-![VMD Simulation Screenshot](vmdss.png)
+![VMD Simulation Screenshot](vmdpic.png)
 
 ## Overview
 
